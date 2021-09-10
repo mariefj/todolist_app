@@ -1,20 +1,16 @@
-import React from 'react';
-import { StyleSheet, StatusBar } from 'react-native';
+<64;import React from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import HomeScreen from './src/HomeScreen';
-import TodosListScreen from './src/TodosListScreen';
-import TodoScreen from './src/TodoScreen';
+import {HomeScreen} from './scr/HomeScreen';
+import {TodosScreen} from './scr/TodosScreen';
 
 const Stack = createNativeStackNavigator();
-
-const ratio : number = 0.35;
 
 const App = () =>
 
 	<NavigationContainer>
-	<StatusBar hidden={true}/>
 		<Stack.Navigator
 			initialRouteName='Home'
 			screenOptions={{
@@ -28,8 +24,7 @@ const App = () =>
 			}}
 		>
 			<Stack.Screen name='Home' component={HomeScreen}/>
-			<Stack.Screen name="TodosList" component={TodosListScreen} options={{title: 'Todos'}}/>
-			<Stack.Screen name="Todos" component={TodoScreen} options={{title: 'Todo'}}/>
+			<Stack.Screen name="Todos" component={TodosScreen} />
 		</Stack.Navigator>
 	</NavigationContainer>
 
