@@ -118,11 +118,12 @@ const styles = StyleSheet.create({
 		height: 50,
 		alignItems: 'center',
 		justifyContent: 'center',
+		elevation: 5
 	},
 	buttonText: {
 		fontSize: 36,
 		color: '#fff',
-		lineHeight: 46
+		marginBottom: '5%',
 	},
 	item: {
 		flex: 1,

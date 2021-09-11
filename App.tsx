@@ -1,37 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
-import HomeScreen from './src/HomeScreen';
-import TodosListScreen from './src/TodosListScreen';
-import TodoScreen from './src/TodoScreen';
+import { NavigationContainer } from '@react-navigation/native';
 
-const Stack = createNativeStackNavigator();
+// import { useNavigation } from '@react-navigation/native';
+
+import HomeScreen from './src/screens/HomeScreen';
+import TodosListScreen from './src/screens/TodosListScreen';
+import TodoScreen from './src/screens/TodoScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import RegistrationScreen from './src/screens/RegistrationScreen';
+
+// type RootStackParamList = {
+// 	Home: {name: string},
+// 	Login: {name: string},
+// 	Registration: {name: string},
+// 	TodosList: {name: string};
+// 	Todos: {name: string};
+// };
+
+const Stack = createNativeStackNavigator();	//<RootStackParamList>
 
 const ratio : number = 0.35;
 
-const App = () =>
+const App = () => {
 
-	<NavigationContainer>
-	<StatusBar hidden={true}/>
-		<Stack.Navigator
-			initialRouteName='Home'
-			screenOptions={{
-				headerStyle: {
-					backgroundColor: '#fff',
-				},
-				headerTintColor: '#888',
-				headerTitleStyle: {
-					fontWeight: 'bold',
+	const [user, setUser] = useState(null)
+
+	return (
+		<NavigationContainer>
+			<StatusBar hidden={true}/>
+				<Stack.Navigator
+					initialRouteName='Home'
+					screenOptions={{
+						headerStyle: {
+							backgroundColor: '#fff',
+						},
+						headerTintColor: '#888',
+						headerTitleStyle: {
+							fontWeight: 'bold',
+						}
+					}}
+				>
+				{ user ?
+					<>
+						<Stack.Screen name='Home'>
+							{props => <HomeScreen {...props} extraData={user} />}
+						</Stack.Screen>
+						<Stack.Screen name='TodosList' component={TodosListScreen} options={{title: 'Todos'}}/>
+						<Stack.Screen name='Todos' component={TodoScreen} options={{title: 'Todo'}}/>
+					</>
+				:
+					<>
+						<Stack.Screen name='Home' component={HomeScreen}/>
+						<Stack.Screen name='Login' component={LoginScreen} />
+						<Stack.Screen name='Registration' component={RegistrationScreen} />
+					</>
 				}
-			}}
-		>
-			<Stack.Screen name='Home' component={HomeScreen}/>
-			<Stack.Screen name="TodosList" component={TodosListScreen} options={{title: 'Todos'}}/>
-			<Stack.Screen name="Todos" component={TodoScreen} options={{title: 'Todo'}}/>
-		</Stack.Navigator>
-	</NavigationContainer>
+				</Stack.Navigator>
+		</NavigationContainer>
+	)
+}
 
 export default App;
 

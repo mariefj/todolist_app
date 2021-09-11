@@ -1,16 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { useNavigation } from '@react-navigation/native';
 
 const ratio : number = 0.35;
 
-const HomeScreen = ({navigation}) =>
+const HomeScreen = (props: any) =>
 	<View style={styles.container}>
-		<Image source={require('../assets/board_tasks.png')} style={styles.illu}></Image>
+		<Image source={require('../../assets/board_tasks.png')} style={styles.illu}></Image>
 		<Text style={styles.baseText}>Hi ! Let's add <Text style={styles.innerText}>some tasks</Text> to avoid your poor memory to forget !</Text>
 		<TouchableOpacity
-			onPress={() => navigation.navigate('TodosList')}
+			onPress={() => props.user ? props.navigation.navigate('TodosList') : props.navigation.navigate('Login')}
 			style={styles.button}>
 			<Text style={styles.buttonText}>Go !</Text>
 		</TouchableOpacity>

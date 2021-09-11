@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-
-const Stack = createNativeStackNavigator();
 
 const todos = [
 	{
@@ -33,7 +28,7 @@ const Item = ({item, onPress, onDelete}) =>
 		</TouchableOpacity>
 	</View>
 
-const TodosListScreen = ({navigation}) => {
+const TodosListScreen = (props: any) => {
 
 	const [todo, setTodo] = useState<string>('')
 
@@ -46,7 +41,7 @@ const TodosListScreen = ({navigation}) => {
 	const renderItem = ({item}) =>
 		<Item
 			item={item}
-			onPress={() => navigation.navigate('Todos')}
+			onPress={() => props.navigation.navigate('Todos')}
 			onDelete={() => null}
 		/>
 
@@ -121,11 +116,12 @@ const styles = StyleSheet.create({
 		height: 50,
 		alignItems: 'center',
 		justifyContent: 'center',
+		elevation: 5,
 	},
 	buttonText: {
 		fontSize: 36,
 		color: '#fff',
-		lineHeight: 46
+		marginBottom: '5%',
 	},
 	item: {
 		flex: 1,
