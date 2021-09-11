@@ -1,54 +1,52 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
-const todos = [
-	{
-		id: '1',
-		name: 'work',
-	},
-	{
-		id: '2',
-		name: 'party',
-	},
-	{
-		id: '3',
-		name: 'sport',
-	},
-];
+const Item = (props: any) => {
 
-const Item = ({item, onPress, onDelete}) =>
-	<View style={styles.item}>
-			<TouchableOpacity onPress={onPress} style={styles.itemName}>
+	return (
+		<View style={styles.item}>
+			<TouchableOpacity onPress={props.onPress} style={styles.itemName}>
 				<View style={styles.circle}></View>
-				<Text style={styles.itemText}>{item.name}</Text>
+				<Text style={styles.itemText}>{props.item.fullName}</Text>
 			</TouchableOpacity>
-		<TouchableOpacity onPress={onDelete}>
-			<MaterialIcons name="delete" size={36} color="pink" />
-		</TouchableOpacity>
-	</View>
+			<TouchableOpacity onPress={props.onUpdate}>
+				<MaterialCommunityIcons name="pencil" size={36} color="pink" />
+			</TouchableOpacity>
+			<TouchableOpacity onPress={props.onDelete}>
+				<MaterialIcons name="delete" size={36} color="pink" />
+			</TouchableOpacity>
+		</View>
+	)
+}
 
-const TodosListScreen = (props: any) => {
+const TodoListsScreen = (props: any) => {
 
-	const [todo, setTodo] = useState<string>('')
+	const [todoName, setTodoName] = useState<string>('')
+	const [todoLists, setTodoLists] = useState(null)
 
-	const handleAddTodo = () => {
+	const handleAdd = () => {
 		// push data
-		console.log(todo)
-		setTodo('')
+		setTodoName('')
 	}
 
-	const renderItem = ({item}) =>
+	const handleUpdate = () => {
+	}
+
+	const handleDelete = () => {
+	}
+
+	const renderItem = (props: any) =>
 		<Item
-			item={item}
-			onPress={() => props.navigation.navigate('Todos')}
-			onDelete={() => null}
+			item={props.item}
+			onPress={() => props.navigation.navigate('Todo', {name: props.item.name, id: props.item.id})}
+			onDelete={() => handleDelete()}
 		/>
 
 	return (
 		<View style={styles.container}>
 			<FlatList
-				data={todos}
+				data={todoLists}
 				renderItem={renderItem}
 				keyExtractor={(item) => item.id}
 			/>
@@ -59,13 +57,13 @@ const TodosListScreen = (props: any) => {
 			>
 				<TextInput
 					style={styles.textInput}
-					value={todo}
-					placeholder="Write a todo"
+					value={todoName}
+					placeholder="Add a Todo List"
 					placeholderTextColor="#aaa"
-					onChangeText={text => setTodo(text)}
+					onChangeText={text => setTodoName(text)}
 				/>
 				<TouchableOpacity
-					onPress={() => handleAddTodo()}
+					onPress={() => handleAdd()}
 					style={styles.button}
 				>
 					<Text style={styles.buttonText}>+</Text>
@@ -75,7 +73,7 @@ const TodosListScreen = (props: any) => {
 	)
 }
 
-export default TodosListScreen;
+export default TodoListsScreen;
 
 const styles = StyleSheet.create({
 	container: {

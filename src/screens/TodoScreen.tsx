@@ -3,55 +3,50 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, KeyboardAvoidingVie
 import { NavigationContainer } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const tasks = [
-	{
-		id: '1',
-		name: 'do stuff',
-		checked: false,
-	},
-	{
-		id: '2',
-		name: 'do other stuff',
-		checked: false,
-	},
-	{
-		id: '3',
-		name: 'do some stuff again',
-		checked: true,
-	},
-];
+const Item = (props: any) => {
 
-const Item = ({item}) => {
-
-	const [checked, setChecked] = useState<boolean>(false)
-	const styleChecked = item.checked ? [styles.itemName, {backgroundColor: '#DCDCDC'}] : [styles.itemName]
+	const styleChecked = props.item.checked ? [styles.itemName, {backgroundColor: '#DCDCDC'}] : [styles.itemName]
 
 	return (
 		<View style={styles.item}>
-			<TouchableOpacity onPress={() => {setChecked(!checked)}} style={styleChecked}>
+			<TouchableOpacity onPress={props.onPress} style={styleChecked}>
 				<View style={styles.circle}></View>
-				<Text style={styles.itemText}>{item.name}</Text>
+				<Text style={styles.itemText}>{props.item.name}</Text>
 			</TouchableOpacity>
-			<TouchableOpacity onPress={() => null}>
+			<TouchableOpacity onPress={props.onDelete}>
 				<MaterialIcons name="delete" size={36} color="pink" />
 			</TouchableOpacity>
 		</View>
 	)
 }
 
-const TodoScreen = () => {
+const TodoScreen = (props: any) => {
 
-	const [task, setTask] = useState<string>('')
+	const [taskName, setTaskName] = useState<string>('')
+	const [todoList, setTodoList] = useState(null)
 
-	const handleAddTask = () => {
+	const handleAdd = () => {
 		// push data
-		setTask('')
+		setTaskName('')
 	}
+
+	const handleDelete = () => {
+	}
+
+	const handlePressTask = () => {
+	}
+
+	const renderItem = (props: any) =>
+		<Item
+			item={props.item}
+			onPress={() => handlePressTask()}
+			onDelete={() => handleDelete()}
+		/>
 
 	return (
 		<View style={styles.container}>
 			<FlatList
-				data={tasks}
+				data={todoList}
 				renderItem={({item}) => <Item item={item} />}
 				keyExtractor={(item) => item.id}
 			/>
@@ -62,13 +57,13 @@ const TodoScreen = () => {
 			>
 				<TextInput
 					style={styles.textInput}
-					value={task}
+					value={taskName}
 					placeholder="Write a task"
 					placeholderTextColor="#aaa"
-					onChangeText={text => setTask(text)}
+					onChangeText={text => setTaskName(text)}
 				/>
 				<TouchableOpacity
-					onPress={() => handleAddTask()}
+					onPress={() => handleAdd()}
 					style={styles.button}
 				>
 					<Text style={styles.buttonText}>+</Text>

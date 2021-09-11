@@ -8,7 +8,7 @@ const HomeScreen = (props: any) =>
 		<Image source={require('../../assets/board_tasks.png')} style={styles.illu}></Image>
 		<Text style={styles.baseText}>Hi ! Let's add <Text style={styles.innerText}>some tasks</Text> to avoid your poor memory to forget !</Text>
 		<TouchableOpacity
-			onPress={() => props.user ? props.navigation.navigate('TodosList') : props.navigation.navigate('Login')}
+			onPress={() => props.user ? props.navigation.navigate('TodoLists') : props.navigation.navigate('Login')}
 			style={styles.button}>
 			<Text style={styles.buttonText}>Go !</Text>
 		</TouchableOpacity>

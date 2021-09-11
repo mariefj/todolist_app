@@ -69,9 +69,6 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fff',
 		alignItems: 'center',
 	},
-	title: {
-
-	},
 	logo: {
 		alignSelf: 'center',
 		width: 130,

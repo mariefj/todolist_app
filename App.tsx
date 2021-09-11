@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 // import { useNavigation } from '@react-navigation/native';
 
 import HomeScreen from './src/screens/HomeScreen';
-import TodosListScreen from './src/screens/TodosListScreen';
+import TodoListsScreen from './src/screens/TodoListsScreen';
 import TodoScreen from './src/screens/TodoScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
@@ -47,8 +47,8 @@ const App = () => {
 						<Stack.Screen name='Home'>
 							{props => <HomeScreen {...props} extraData={user} />}
 						</Stack.Screen>
-						<Stack.Screen name='TodosList' component={TodosListScreen} options={{title: 'Todos'}}/>
-						<Stack.Screen name='Todos' component={TodoScreen} options={{title: 'Todo'}}/>
+						<Stack.Screen name='TodoLists' component={TodoListsScreen} options={{title: 'Your Todo lists'}}/>
+						<Stack.Screen name='Todo' component={TodoScreen} options={({ route } : any) => ({ title: route.params.name })}/>
 					</>
 				:
 					<>
