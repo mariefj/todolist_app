@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import firebase from './src/firebase/config'
+import 'firebase/auth'
+import 'firebase/firestore'
 
 // import { useNavigation } from '@react-navigation/native';
 
@@ -25,7 +28,25 @@ const ratio : number = 0.35;
 
 const App = () => {
 
-	const [user, setUser] = useState(null)
+	const [user, setUser] = useState<any>(null)
+
+	// useEffect(() => {
+	// 	const usersRef = firebase.firestore().collection('users')
+	// 	firebase.auth().onAuthStateChanged(user => {
+	// 		if (user) {
+	// 			usersRef
+	// 				.doc(user.uid)
+	// 				.get()
+	// 				.then((document) => {
+	// 					const userData = document.data()
+	// 					setUser(userData)
+	// 				})
+	// 				.catch((error) => {
+	// 					alert(error)
+	// 				})
+	// 		}
+	// 	})
+	// })
 
 	return (
 		<NavigationContainer>
@@ -55,6 +76,8 @@ const App = () => {
 						<Stack.Screen name='Home' component={HomeScreen}/>
 						<Stack.Screen name='Login' component={LoginScreen} />
 						<Stack.Screen name='Registration' component={RegistrationScreen} />
+						<Stack.Screen name='TodoLists' component={TodoListsScreen} options={{title: 'Your Todo lists'}}/>
+						<Stack.Screen name='Todo' component={TodoScreen} options={({ route } : any) => ({ title: route.params.name })}/>
 					</>
 				}
 				</Stack.Navigator>

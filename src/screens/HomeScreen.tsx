@@ -3,16 +3,20 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
 const ratio : number = 0.35;
 
-const HomeScreen = (props: any) =>
-	<View style={styles.container}>
-		<Image source={require('../../assets/board_tasks.png')} style={styles.illu}></Image>
-		<Text style={styles.baseText}>Hi ! Let's add <Text style={styles.innerText}>some tasks</Text> to avoid your poor memory to forget !</Text>
-		<TouchableOpacity
-			onPress={() => props.user ? props.navigation.navigate('TodoLists') : props.navigation.navigate('Login')}
-			style={styles.button}>
-			<Text style={styles.buttonText}>Go !</Text>
-		</TouchableOpacity>
-	</View>
+const HomeScreen = (props: any) => {
+
+	return (
+		<View style={styles.container}>
+			<Image source={require('../../assets/board_tasks.png')} style={styles.illu}></Image>
+			<Text style={styles.baseText}>Hi ! Let's add <Text style={styles.innerText}>some tasks</Text> to avoid your poor memory to forget !</Text>
+			<TouchableOpacity
+				onPress={() => props.route.params?.user ? props.navigation.navigate('TodoLists', { user: props.route.params.user}) : props.navigation.navigate('Login')}
+				style={styles.button}>
+				<Text style={styles.buttonText}>Go !</Text>
+			</TouchableOpacity>
+		</View>
+	)
+}
 
 export default HomeScreen;
 

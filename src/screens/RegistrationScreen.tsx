@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Image, KeyboardAvoidingView, Platform, TextStyle } from 'react-native';
+import firebase from '../firebase/config'
+import 'firebase/auth'
+import 'firebase/firestore'
 
 const RegistrationScreen = (props: any) => {
 
@@ -13,10 +16,39 @@ const RegistrationScreen = (props: any) => {
 
 	const onFooterLinkPress = () => {
 		setPressed(true)
-		setTimeout(() => props.navigation.navigate('Login'), 150)
+		/* setTimeout(() => */props.navigation.navigate('Login')/*, 150)*/
 	}
 
 	const onRegisterPress = () => {
+		if (password !== confirmPassword) {
+			alert("Passwords don't match.")
+			return
+		}
+
+		firebase
+			.auth()
+			.createUserWithEmailAndPassword(email, password)
+			.then((response) => {
+				const uid = response.user?.uid
+				const data = {
+					id: uid,
+					email,
+					fullName,
+				};
+				const usersRef = firebase.firestore().collection('users')
+				usersRef
+					.doc(uid)
+					.set(data)
+					.then(() => {
+						props.navigation.navigate('TodoLists', {user: data})
+				})
+				.catch((error) => {
+					alert(error)
+				});
+			})
+			.catch((error) => {
+				alert(error)
+			});
 	}
 
 	return (

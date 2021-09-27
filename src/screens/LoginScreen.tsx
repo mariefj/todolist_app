@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Image, KeyboardAvoidingView, Platform, TextStyle } from 'react-native';
+import firebase from '../firebase/config'
+import 'firebase/auth'
+import 'firebase/firestore'
 
 const LoginScreen = (props: any) => {
 
@@ -11,7 +14,7 @@ const LoginScreen = (props: any) => {
 
 	const onFooterLinkPress = () => {
 		setPressed(true)
-		setTimeout(() => props.navigation.navigate('Registration'), 150)
+		/*setTimeout(() => */props.navigation.navigate('Registration')/*, 150)*/
 	}
 
 	useEffect(() => {
@@ -19,6 +22,30 @@ const LoginScreen = (props: any) => {
 	})
 
 	const onLoginPress = () => {
+		firebase
+			.auth()
+			.signInWithEmailAndPassword(email, password)
+			.then((response) => {
+				const uid = response.user?.uid
+				const usersRef = firebase.firestore().collection('users')
+				usersRef
+					.doc(uid)
+					.get()
+					.then(firestoreDocument => {
+						if (!firestoreDocument.exists) {
+							alert("User does not exist anymore.")
+							return
+						}
+						const user = firestoreDocument.data()
+						props.navigation.navigate('TodoLists', {user})
+					})
+					.catch(error => {
+						alert(error)
+					})
+			})
+			.catch(error => {
+				alert(error)
+			})
 	}
 
 	return (

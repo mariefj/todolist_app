@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput, Keyboard } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
+import firebase from '../firebase/config'
+import 'firebase/auth'
+import 'firebase/firestore';
 
 const Item = (props: any) => {
 
-	const styleChecked = props.item.checked ? [styles.itemName, {backgroundColor: '#DCDCDC'}] : [styles.itemName]
+	const styleItemChecked = props.item.checked ? [styles.itemName, {backgroundColor: '#DCDCDC'}] : [styles.itemName]
+	const styleTextChecked = props.item.checked ? [styles.itemText, {textDecorationLine: 'line-through'}] : [styles.itemText]
 
 	return (
 		<View style={styles.item}>
-			<TouchableOpacity onPress={props.onPress} style={styleChecked}>
+			<TouchableOpacity onPress={props.onPress} style={styleItemChecked}>
 				<View style={styles.circle}></View>
-				<Text style={styles.itemText}>{props.item.name}</Text>
+				<Text style={styleTextChecked}>{props.item.name}</Text>
 			</TouchableOpacity>
 			<TouchableOpacity onPress={props.onDelete}>
 				<MaterialIcons name="delete" size={36} color="pink" />
@@ -23,31 +27,89 @@ const Item = (props: any) => {
 const TodoScreen = (props: any) => {
 
 	const [taskName, setTaskName] = useState<string>('')
-	const [todoList, setTodoList] = useState(null)
+	const [todoList, setTodoList] = useState([])
+
+	const userID = props.route.params.user.id
+	const todoListCollectionRef =
+		firebase
+			.firestore()
+			.collection('todoLists')
+			.doc(userID)
+			.collection('todoListsUser')
+			.doc(props.route.params.id)
+			.collection('tasks')
+
+	useEffect(() => {
+		todoListCollectionRef
+			.orderBy('createdAt', 'desc')
+			.onSnapshot(
+				querySnapshot => {
+					const newTodoList: any = []
+					querySnapshot.forEach(doc => {
+						const task = doc.data()
+						task.id = doc.id
+						newTodoList.push(task)
+					});
+					setTodoList(newTodoList)
+				},
+				error => {
+					console.log(error)
+				}
+			)
+	}, [])
 
 	const handleAdd = () => {
-		// push data
-		setTaskName('')
+		if (taskName && taskName.length > 0) {
+			const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+			const data = {
+				name: taskName,
+				checked: false,
+				createdAt: timestamp,
+			};
+			todoListCollectionRef
+				.add(data)
+				.then(doc => {
+					setTaskName('')
+					Keyboard.dismiss()
+				})
+			.catch((error) => {
+				console.error(error)
+			});
+		}
 	}
 
-	const handleDelete = () => {
+	const handleDelete = (item: any) => {
+		todoListCollectionRef
+			.doc(item)
+			.delete()
+			.then(() => {})
+			.catch((error) => {
+				console.error(error)
+			})
 	}
 
-	const handlePressTask = () => {
+	const handlePressTask = (item: any) => {
+		todoListCollectionRef
+			.doc(item.id)
+			.update({checked: !item.checked})
+			.then(() => {})
+			.catch((error) => {
+				console.error(error)
+			})
 	}
 
-	const renderItem = (props: any) =>
+	const renderItem = (item: any) =>
 		<Item
-			item={props.item}
-			onPress={() => handlePressTask()}
-			onDelete={() => handleDelete()}
+			item={item.item}
+			onPress={() => handlePressTask(item.item)}
+			onDelete={() => handleDelete(item.item.id)}
 		/>
 
 	return (
 		<View style={styles.container}>
 			<FlatList
 				data={todoList}
-				renderItem={({item}) => <Item item={item} />}
+				renderItem={renderItem}
 				keyExtractor={(item) => item.id}
 			/>
 
