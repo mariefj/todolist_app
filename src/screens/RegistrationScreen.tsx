@@ -16,7 +16,7 @@ const RegistrationScreen = (props: any) => {
 
 	const onFooterLinkPress = () => {
 		setPressed(true)
-		/* setTimeout(() => */props.navigation.navigate('Login')/*, 150)*/
+		setTimeout(() => props.navigation.navigate('Login'), 150)
 	}
 
 	const onRegisterPress = () => {

@@ -14,7 +14,14 @@ const LoginScreen = (props: any) => {
 
 	const onFooterLinkPress = () => {
 		setPressed(true)
-		/*setTimeout(() => */props.navigation.navigate('Registration')/*, 150)*/
+		setTimeout(() => props.navigation.navigate('Registration'), 150)
+	}
+
+	const onResetPasswordPress = () => {
+		firebase.auth().sendPasswordResetEmail(email)
+			.catch((error) => {
+				console.error(error)
+			})
 	}
 
 	useEffect(() => {
@@ -82,6 +89,11 @@ const LoginScreen = (props: any) => {
 				</TouchableOpacity>
 				<View style={styles.footerView}>
 					<Text style={styles.footerText}>Don't have an account? <Text onPress={onFooterLinkPress} style={stylePressed}>Sign up</Text></Text>
+					<TouchableOpacity
+						onPress={onResetPasswordPress}
+					>
+						<Text style={styles.footerTextReset}>Reset password</Text>
+					</TouchableOpacity>
 				</View>
 			</KeyboardAvoidingView>
 		</View>
@@ -145,5 +157,11 @@ const styles = StyleSheet.create({
 		color: "pink",
 		fontWeight: "bold",
 		fontSize: 17,
-	}
+	},
+	footerTextReset: {
+		fontSize: 17,
+		color: '#888',
+		textDecorationLine: 'underline',
+		marginTop: 8,
+	},
 })

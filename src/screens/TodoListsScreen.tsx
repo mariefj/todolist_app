@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput, Keyboard, Modal } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import Dialog from "react-native-dialog";
+import { IItem, IItemList } from '../interfaces/IItem'
+
 import firebase from '../firebase/config'
 import 'firebase/auth'
 import 'firebase/firestore';
+
 
 const Item = (props: any) => {
 
@@ -23,53 +27,12 @@ const Item = (props: any) => {
 	)
 }
 
-const Dialog = (item: any, listRef: any) => {
-	const [modalVisible, setModalVisible] = useState(true);
-	const [todoName, setTodoName] = useState<string>('');
-
-	const handleUpdate = (item: any) => {
-		listRef
-			.doc(item)
-			.update({name: todoName})
-			.then(() => {})
-			.catch((error) => {
-				console.error(error)
-			})
-	}
-
-	return (
-		<View>
-			<Modal
-				animationType='slide'
-				transparent={true}
-				visible={modalVisible}
-				onRequestClose={() => setModalVisible(false)}
-			>
-				<View>
-					<TextInput
-						value={todoName}
-						placeholder={todoName}
-						placeholderTextColor="#aaa"
-						onChangeText={text => setTodoName(text)}
-					/>
-					<TouchableOpacity
-						onPress={() => {
-							handleUpdate(item)
-							setModalVisible(false)
-						}}
-					>
-						<Text>Ok</Text>
-					</TouchableOpacity>
-				</View>
-			</Modal>
-		</View>
-	)
-}
-
 const TodoListsScreen = (props: any) => {
 
 	const [todoName, setTodoName] = useState<string>('')
-	const [todoLists, setTodoLists] = useState([])
+	const [todoLists, setTodoLists] = useState<IItem[] | null>([])
+	const [dialogVisible, setDialogVisible] = useState<boolean>(false)
+	const [currentItem, setCurrentItem] = useState<IItem | null>()
 
 	const userID = props.route.params.user.id
 	const todoListsCollectionRef = firebase.firestore().collection('todoLists').doc(userID).collection('todoListsUser')
@@ -79,7 +42,7 @@ const TodoListsScreen = (props: any) => {
 			.orderBy('createdAt', 'desc')
 			.onSnapshot(
 				querySnapshot => {
-					const newTodoLists: any = []
+					const newTodoLists: IItem[] | null = []
 					querySnapshot.forEach(doc => {
 						const todoList = doc.data()
 						todoList.id = doc.id
@@ -112,30 +75,40 @@ const TodoListsScreen = (props: any) => {
 		}
 	}
 
-	const handleUpdate = (item: any) => {
-		return (
-			<Dialog
-				item={item}
-				listRef={todoListsCollectionRef}
-			/>
-		)
+	const handleUpdate = () => {
+		if (todoName && todoName.length > 0) {
+			todoListsCollectionRef
+				.doc(currentItem?.id)
+				.update({name: todoName})
+				.then(() => {
+					setCurrentItem(null)
+					setTodoName('')
+					setDialogVisible(false)
+				})
+				.catch((error) => {
+					console.error(error)
+				})
+		}
 	}
 
-	const handleDelete = (item: any) => {
+	const handleDelete = (itemID: string) => {
 		todoListsCollectionRef
-			.doc(item)
+			.doc(itemID)
 			.delete()
-			.then(() => {})
 			.catch((error) => {
 				console.error(error)
 			})
 	}
 
-	const RenderItem = (item: any) =>
+	const RenderItem = (item: IItemList) =>
 		<Item
 			item={item.item}
 			onPress={() => props.navigation.navigate('Todo', {name: item.item.name, id: item.item.id, user: props.route.params.user})}
-			onUpdate={() => handleUpdate(item.item)}
+			onUpdate={() => {
+				setTodoName(item.item.name)
+				setCurrentItem(item.item)
+				setDialogVisible(true)
+			}}
 			onDelete={() => handleDelete(item.item.id)}
 		/>
 
@@ -145,10 +118,9 @@ const TodoListsScreen = (props: any) => {
 				<FlatList
 					data={todoLists}
 					renderItem={RenderItem}
-					keyExtractor={(item: any) => item.id}
+					keyExtractor={(item: IItem) => item.id}
 				/>
 			)}
-
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
 				style={styles.containerInput}
@@ -167,6 +139,14 @@ const TodoListsScreen = (props: any) => {
 					<Text style={styles.buttonText}>+</Text>
 				</TouchableOpacity>
 			</KeyboardAvoidingView>
+			<Dialog.Container visible={dialogVisible}>
+				<Dialog.Input
+					value={todoName}
+					placeholder={todoName}
+					onChangeText={text => setTodoName(text)}
+				/>
+				<Dialog.Button label="Ok" onPress={handleUpdate} style={{color: 'pink', fontSize: 18}}/>
+			</Dialog.Container>
 		</View>
 	)
 }

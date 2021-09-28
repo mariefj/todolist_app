@@ -1,10 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput, Keyboard, ListRenderItem } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { IItem } from '../interfaces/IItem'
+
 import firebase from '../firebase/config'
 import 'firebase/auth'
 import 'firebase/firestore';
+
+// import DocumentReference = firebase.firestore.DocumentReference
+// import CollectionReference = firebase.firestore.CollectionReference
+// import DocumentData = firebase.firestore.DocumentData
+// import DocumentSnapshot = firebase.firestore.DocumentSnapshot
+
+interface IItemTask extends IItem{
+	checked: boolean,
+}
+
+interface IItemListTask {
+	item : {
+		id: string,
+		name: string,
+		createdAt: {nanoseconds: number, seconds: number},
+		checked: boolean,
+	}
+}
 
 const Item = (props: any) => {
 
@@ -27,7 +47,7 @@ const Item = (props: any) => {
 const TodoScreen = (props: any) => {
 
 	const [taskName, setTaskName] = useState<string>('')
-	const [todoList, setTodoList] = useState([])
+	const [todoList, setTodoList] = useState<IItemTask[] | null>(null)
 
 	const userID = props.route.params.user.id
 	const todoListCollectionRef =
@@ -44,7 +64,7 @@ const TodoScreen = (props: any) => {
 			.orderBy('createdAt', 'desc')
 			.onSnapshot(
 				querySnapshot => {
-					const newTodoList: any = []
+					const newTodoList: IItemTask[] | null = []
 					querySnapshot.forEach(doc => {
 						const task = doc.data()
 						task.id = doc.id
@@ -78,9 +98,9 @@ const TodoScreen = (props: any) => {
 		}
 	}
 
-	const handleDelete = (item: any) => {
+	const handleDelete = (itemID: string) => {
 		todoListCollectionRef
-			.doc(item)
+			.doc(itemID)
 			.delete()
 			.then(() => {})
 			.catch((error) => {
@@ -88,7 +108,7 @@ const TodoScreen = (props: any) => {
 			})
 	}
 
-	const handlePressTask = (item: any) => {
+	const handlePressTask = (item: IItemTask) => {
 		todoListCollectionRef
 			.doc(item.id)
 			.update({checked: !item.checked})
@@ -98,7 +118,7 @@ const TodoScreen = (props: any) => {
 			})
 	}
 
-	const renderItem = (item: any) =>
+	const RenderItem = (item: IItemListTask) =>
 		<Item
 			item={item.item}
 			onPress={() => handlePressTask(item.item)}
@@ -109,7 +129,7 @@ const TodoScreen = (props: any) => {
 		<View style={styles.container}>
 			<FlatList
 				data={todoList}
-				renderItem={renderItem}
+				renderItem={RenderItem}
 				keyExtractor={(item) => item.id}
 			/>
 
